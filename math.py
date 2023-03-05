@@ -9,9 +9,14 @@ pi = "3.141592653589793238462643383279502884197169399375105820974944592307816406
 # Take the first 1000 digits of pi
 pi = pi[:1000]
 
-# Initialize score and user_digits
+# Initialize score, user_digits and mistakes
 score = 0
 user_digits = ""
+mistakes = ""
+
+# Initialize the life counter and max number of allowed mistakes
+life = 3
+max_mistakes = 3
 
 # Loop through each digit of pi
 for i in range(len(pi)):
@@ -22,24 +27,42 @@ for i in range(len(pi)):
         # Check for user input without waiting for the Enter key
         if msvcrt.kbhit():
             answer = msvcrt.getch().decode()
-            user_digits += answer
-            # Clear the console after each user input
+            # Clear the terminal for a cleaner look
             os.system('cls')
+            # Check if the answer is correct
+            if answer == digit:
+                user_digits += answer
+                score += 1
+                print("Correct!")
+            else:
+                life -= 1
+                mistakes += answer
+                print("Incorrect. The correct answer is " + digit)
+                print("You have " + str(life) + " life(s) left.")
+                if life == 0:
+                    break
+            # Show the digits entered so far without the mistakes
+            digits_so_far = ""
+            for j in range(len(user_digits)):
+                if j < len(mistakes) or user_digits[j] == pi[j]:
+                    digits_so_far += user_digits[j]
+                else:
+                    digits_so_far += "*"
+            print("Digits entered so far: " + digits_so_far)
     
-    # Check if the answer is correct
-    if answer == digit:
-        print("Correct!")
-        score += 1
-        print("Digits entered so far: " + user_digits)
-    else:
-        print("Incorrect. The correct answer is " + digit)
+    # Check if the user has made too many mistakes
+    if len(mistakes) >= max_mistakes:
+        print("You've made too many mistakes. Game over.")
         break
-    
-    # Add a delay to make it easier to follow
-    time.sleep(0.1)
 
-# Print the digits the user inputted
-print("You entered: " + user_digits)
+# Print the digits the user inputted without the mistakes
+user_digits_without_mistakes = ""
+for j in range(len(user_digits)):
+    if j < len(mistakes) or user_digits[j] == pi[j]:
+        user_digits_without_mistakes += user_digits[j]
+    else:
+        user_digits_without_mistakes += "*"
+print("You entered: " + user_digits_without_mistakes)
 
 # Print final score
 print("Quiz completed. Your final score is " + str(score) + " out of infinity, but I've only put the first " + str(len(pi)) + " digits.")
